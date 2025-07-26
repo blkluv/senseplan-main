@@ -7,6 +7,9 @@ const vapi = new VapiClient({
   token: process.env.VAPI_API_TOKEN
 })
 
+// inline sleep helper
+const sleep = ms => new Promise(res => setTimeout(res, ms))
+
 export async function POST(req) {
   try {
     const {
@@ -38,11 +41,9 @@ export async function POST(req) {
     }
 
     const call = await vapi.calls.create({
-      assistantId:   process.env.VAPI_ASSISTANT_ID,      // ← top-level
-      phoneNumberId,                                     // ← top-level
-      customer: { number: businessNumber },              // ← unchanged
-
-      // ↓ new place for your variables
+      assistantId:   process.env.VAPI_ASSISTANT_ID,
+      phoneNumberId,
+      customer: { number: businessNumber },
       assistantOverrides: {
         variableValues: {
           serviceDesc,
@@ -54,8 +55,24 @@ export async function POST(req) {
       }
     })
 
+    let finalStatus
+    while (true) {
+      finalStatus = await vapi.calls.get(call.id)
+      if (['ended','failed'].includes(finalStatus.status)) break
+      await sleep(3000)  // wait 3s before retry
+    }
+
+    // Extract the summary and transcript
+    const summary    = finalStatus.analysis?.summary
+    const transcript = finalStatus.transcript
+
     return NextResponse.json(
-      { success: true, callId: call.id },
+      {
+        success:   true,
+        callId:    call.id,
+        summary,
+        transcript
+      },
       { status: 200 }
     )
   } catch (err) {
