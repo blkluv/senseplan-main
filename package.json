@@ -9,8 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@vapi-ai/server-sdk": "^0.10.0",
     "@vapi-ai/web": "^2.3.8",
+    "dotenv": "^17.2.1",
     "next": "15.4.4",
+    "node-cron": "^4.2.1",
     "react": "19.1.0",
     "react-dom": "19.1.0"
   },
