@@ -77,7 +77,7 @@ export default function DashboardContent() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          businessNumber: "+15109497606", // place.phone_number,
+          businessNumber: place.phone_number || "+15109497606",
           serviceDesc: "schedule a haircut",
           timeWindow: "anytime afternoon",
           name: "Devin",
@@ -210,10 +210,40 @@ export default function DashboardContent() {
 
           {/* Call Transcript */}
           <div className="space-y-4">
-            <Card className="h-fit">
+            <Card>
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Phone className="h-5 w-5 mr-2" />
                   Call Transcript
                   {isCallActive && (
-                    <div
+                    <Loader2 className="h-4 w-4 ml-2 animate-spin text-blue-600" />
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {transcript.length > 0 ? (
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                    {transcript.map((line, i) => (
+                      <p key={i} className="text-sm text-slate-700">{line}</p>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-slate-500">
+                    {isCallActive ? "📞 Call in progress, transcript loading..." : "No transcript available yet."}
+                  </p>
+                )}
+
+                {callSummary && (
+                  <div className="mt-4 p-3 bg-slate-100 rounded">
+                    <h4 className="font-medium text-slate-800 mb-2">📋 Call Summary</h4>
+                    <p className="text-sm text-slate-700">{callSummary}</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
